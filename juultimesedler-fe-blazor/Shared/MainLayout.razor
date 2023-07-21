@@ -3,32 +3,184 @@
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
+<style>
+    .mud-main-content {
+        padding-top: 15px;
+    }
+
+    .mud-container {
+        padding-top: 15px;
+    }
+
+    .mud-paper {
+        padding: 15px;
+    }
+
+    .company-headline {
+        background: var(--mud-palette-primary-lighten);
+        border-radius: 4px;
+        box-shadow: var(--mud-elevation-5);
+        color: var(--mud-palette-white);
+        letter-spacing: 3px;
+        margin: 10px 0 30px;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .mud-typography-h6 {
+        margin-bottom: 20px;
+    }
+
+    .submit-btn {
+        box-shadow: var(--mud-elevation-5);
+        margin-bottom: 10px;
+        margin-top: 5px;
+    }
+</style>
 
 <MudLayout>
-    <MudAppBar Elevation="0">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudSpacer />
-        <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor/" Target="_blank" />
-    </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
-        <MudDrawerHeader>
-            <MudText Typo="Typo.h6">juultimesedler_fe_blazor</MudText>
-        </MudDrawerHeader>
-        <NavMenu />
-    </MudDrawer>
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="my-16 pt-16">
-            @Body
+        <MudContainer MaxWidth="MaxWidth.Large">
+
+            <MudText Class="company-headline" Typo="Typo.h4">Juul Timesedler</MudText>
+
+            <MudPaper Elevation="5">
+                <MudText Typo="Typo.h6">Weeks &amp; days</MudText>
+                <MudDivider />
+
+                <MudAppBar Color="Color.Primary" Fixed="false">
+                    <MudIcon Icon="@Icons.Material.Filled.ChevronLeft" Title="Prev. Week" />
+                    <MudSpacer />
+                    <MudText Typo="Typo.h5">Week # 26</MudText>
+                    <MudSpacer />
+                    <MudIcon Icon="@Icons.Material.Filled.ChevronRight" Title="Next Week" />
+                </MudAppBar>
+                <MudTabs AlwaysShowScrollButtons="true"
+                         Class="mt-4"
+                         Color="@Color.Info"
+                         Rounded="true">
+                    <MudTabPanel Text="Monday" />
+                    <MudTabPanel Text="Tuesday" />
+                    <MudTabPanel Text="Wednesday" />
+                    <MudTabPanel Text="Thursday" />
+                    <MudTabPanel Text="Friday" />
+                    <MudTabPanel Text="Saturday" />
+                    <MudTabPanel Text="Sunday" />
+                </MudTabs>
+
+            </MudPaper>
+
+            <br />
+
+            <MudForm>
+
+                <MudPaper Elevation="5">
+
+                    <MudText Typo="Typo.h6">Time</MudText>
+
+                    @* STARTING TIME *@
+                    <MudItem>
+                        <MudTimePicker Adornment="Adornment.Start"
+                                       Label="Starting Time"
+                                       PickerVariant="PickerVariant.Dialog"
+                                       TimeEditMode="TimeEditMode.OnlyHours"
+                        @bind-Time="startingTime">
+                            <PickerActions>
+                                <MudButton Class="mud-theme-primary" @onclick="() => setPredefinedMinutes(Times.startTime, 0)">:00</MudButton>
+                                <MudButton Class="mud-theme-primary" @onclick="() => setPredefinedMinutes(Times.startTime, 15)">:15</MudButton>
+                                <MudButton Class="mud-theme-primary" @onclick="() => setPredefinedMinutes(Times.startTime, 30)">:30</MudButton>
+                                <MudButton Class="mud-theme-primary" @onclick="() => setPredefinedMinutes(Times.startTime, 45)">:45</MudButton>
+                                <MudButton Color="Color.Primary" OnClick="@(() => context.Close())">Ok</MudButton>
+                            </PickerActions>
+                        </MudTimePicker>
+
+                    </MudItem>
+                    @* /STARTING TIME *@
+
+                    <br />
+
+                    @* ENDING TIME *@
+                    <MudItem>
+                        <MudTimePicker Adornment="Adornment.Start"
+                                       Label="Ending Time"
+                                       PickerVariant="PickerVariant.Dialog"
+                                       TimeEditMode="TimeEditMode.OnlyHours"
+                        @bind-Time="endingTime">
+                            <PickerActions>
+                                <MudButton Class="mud-theme-primary" @onclick="() => setPredefinedMinutes(Times.endingTime, 0)">:00</MudButton>
+                                <MudButton Class="mud-theme-primary" @onclick="() => setPredefinedMinutes(Times.endingTime, 15)">:15</MudButton>
+                                <MudButton Class="mud-theme-primary" @onclick="() => setPredefinedMinutes(Times.endingTime, 30)">:30</MudButton>
+                                <MudButton Class="mud-theme-primary" @onclick="() => setPredefinedMinutes(Times.endingTime, 45)">:45</MudButton>
+                                <MudButton Color="Color.Primary" OnClick="@(() => context.Close())">Ok</MudButton>
+                            </PickerActions>
+                        </MudTimePicker>
+
+                    </MudItem>
+                    @* /ENDING TIME *@
+                </MudPaper>
+
+                <br />
+
+                <MudPaper Elevation="5">
+
+                    <MudText Typo="Typo.h6">Tasks</MudText>
+
+                    <MudTextField @bind-Value="Search" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary" />
+                    <MudSelect T="string" Label="Tasks" MultiSelection="true" Variant="Variant.Outlined">
+                        <MudSelectItem T="string">Slæbe gips</MudSelectItem>
+                        <MudSelectItem T="string">Skære gips</MudSelectItem>
+                        <MudSelectItem T="string">Sætte gips op</MudSelectItem>
+                    </MudSelect>
+
+                    <br />
+
+                    <MudTextField T="string" Label="Comments" Variant="Variant.Outlined" Text="200.- for diesel" Lines="5"></MudTextField>
+
+                </MudPaper>
+
+                <br />
+
+                <MudButton Class="submit-btn"
+                           Color="Color.Primary"
+                           Variant="Variant.Filled">Send</MudButton>
+
+                <br />
+                <br />
+
+            </MudForm>
         </MudContainer>
     </MudMainContent>
+
 </MudLayout>
 
 @code {
-    bool _drawerOpen = true;
-
-    void DrawerToggle()
+    string searchTerm = "it";
+    IEnumerable<string> sentences = new List<string>
     {
-        _drawerOpen = !_drawerOpen;
+        "This is the first item", "This is the second item", "This is the third item"
+    };
+
+    public enum Times
+    {
+        startTime,
+        endingTime
+    }
+
+    TimeSpan? startingTime = new TimeSpan(02, 35, 00);
+    TimeSpan? endingTime = new TimeSpan(02, 35, 00);
+
+    public string Search { get; set; }
+
+    public void setPredefinedMinutes(Times whichTime, int minutes)
+    {
+        if (whichTime == Times.endingTime)
+        {
+            endingTime = TimeSpan.Parse(endingTime!.Value.Hours + ":" + minutes + ":00");
+        }
+        else
+        {
+            startingTime = TimeSpan.Parse(startingTime!.Value.Hours + ":" + minutes + ":00");
+        }
+        Console.WriteLine(endingTime);
     }
 }

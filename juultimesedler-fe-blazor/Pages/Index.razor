@@ -3,8 +3,10 @@
 
 <PageTitle>Index</PageTitle>
 
+@*HEADLINE*@
 <MudText Class="company-headline" Typo="Typo.h4">Juul Timesedler</MudText>
 
+@*WEEKS & DAYS*@
 <MudPaper Elevation="5">
     <MudText Typo="Typo.h6">Weeks &amp; days</MudText>
     <MudDivider />
@@ -28,29 +30,28 @@
         <MudTabPanel Text="Saturday" />
         <MudTabPanel Text="Sunday" />
     </MudTabs>
-
 </MudPaper>
-
 <br />
 
 <MudForm>
-
+    @*PROJECTS*@
     <MudPaper Elevation="5">
         <MudItem>
             <MudText Typo="Typo.h6">Projects</MudText>
             <MudAutocomplete
                 @bind-Value="project"
+                Clearable
                 Label="Select project"
-                T="string"
-                SearchFunc="ChooseProject"
-                Clearable="true"
                 OnClearButtonClick="ClearProject"
-                />
+                SearchFunc="ChooseProject"
+                T="string"
+            />
         </MudItem>
     </MudPaper>
     <MudDivider />
     <br />
 
+    @*STARTING TIME & ENDING TIME*@
     <MudPaper Elevation="5">
         @* STARTING TIME *@
         <MudItem>
@@ -70,8 +71,6 @@
             </MudTimePicker>
 
         </MudItem>
-        @* /STARTING TIME *@
-
         <br />
 
         @* ENDING TIME *@
@@ -91,14 +90,12 @@
             </MudTimePicker>
 
         </MudItem>
-        @* /ENDING TIME *@
     </MudPaper>
     <br />
 
+    @*TASKS*@
     <MudPaper Elevation="5">
-
         <MudText Typo="Typo.h6">Tasks</MudText>
-
         <MudTextField @bind-Value="Search" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary" />
         <MudSelect T="string" Label="Tasks" MultiSelection="true" Variant="Variant.Outlined">
             <MudSelectItem T="string">Slæbe gips</MudSelectItem>
@@ -107,12 +104,16 @@
         </MudSelect>
 
         <br />
-
-        <MudTextField T="string" Label="Comments" Variant="Variant.Outlined" Text="200.- for diesel" Lines="5"></MudTextField>
-
     </MudPaper>
     <br />
 
+    @*COMMENTS*@
+    <MudPaper Elevation="5">
+        <MudTextField T="string" Label="Comments" Variant="Variant.Outlined" Text="200.- for diesel" Lines="5"></MudTextField>
+    </MudPaper>
+    <br />
+
+    @*SUBMIT*@
     <MudButton Class="submit-btn"
                Color="Color.Primary"
                Variant="Variant.Filled">Send</MudButton>
@@ -121,26 +122,22 @@
 </MudForm>
 
 @code {
-    HttpClient httpclient = new();
+    #region INIT Variables & Services
+    HttpClient httpClient = new();
     private string baseUri = "https://localhost";
-    private int port = 44352;
+    private int apiPort = 44352;
     private string endpointPrefix = "api";
-
     private string project;
     private List<string> projects = new();
-
-    //private string[] projects = new[] { "Oslo1", "Oslo2", "Test Proj" };
-
-    public enum Times
-    {
-        startTime,
-        endingTime
-    }
+    public string Search { get; set; }
+    public enum Times{ startTime, endingTime }
     TimeSpan? startingTime = new TimeSpan(02, 35, 00);
     TimeSpan? endingTime = new TimeSpan(02, 35, 00);
 
-    public string Search { get; set; }
+    ProjectService projectService = new();
+    #endregion
 
+    #region METHODS
     public void SetPredefinedMinutes(Times whichTime, int minutes)
     {
         if (whichTime == Times.endingTime)
@@ -153,18 +150,6 @@
         }
         Console.WriteLine(endingTime);
     }
-
-    protected override async Task OnInitializedAsync()
-    {
-        string uri = baseUri + ":" + port + "/" + endpointPrefix + "/projects";
-        IEnumerable<GetProjectDTO> fetchedProjects = await GetProjects(uri);
-
-        foreach (GetProjectDTO project in fetchedProjects)
-        {
-            projects.Add(project.ProjectFullName);
-        }
-    }
-
     private async Task<IEnumerable<string>> ChooseProject(string project)
     {
         if (string.IsNullOrEmpty(project))
@@ -173,14 +158,19 @@
         }
         return projects.Where(p => p.Contains(project, StringComparison.InvariantCultureIgnoreCase));
     }
+    private async Task ClearProject(){ project = string.Empty; }
+    #endregion
 
-    private async Task ClearProject()
+    #region BLAZOR CONFIG
+    protected override async Task OnInitializedAsync()
     {
-        project = string.Empty;
-    }
+        string uri = baseUri + ":" + apiPort + "/" + endpointPrefix + "/projects";
+        IEnumerable<GetProjectDTO> fetchedProjects = await projectService.GetProjects(httpClient, uri);
 
-    public async Task<IEnumerable<GetProjectDTO>> GetProjects(string uri)
-    {
-        return await httpclient.GetFromJsonAsync<List<GetProjectDTO>>(uri);
+        foreach (GetProjectDTO project in fetchedProjects)
+        {
+            projects.Add(project.ProjectFullName);
+        }
     }
+    #endregion
 }

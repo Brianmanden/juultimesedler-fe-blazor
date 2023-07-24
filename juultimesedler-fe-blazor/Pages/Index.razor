@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using juultimesedler_fe_blazor.Shared.Models.DTOs;
 
 <PageTitle>Index</PageTitle>
 
@@ -42,6 +43,8 @@
                 Label="Select project"
                 T="string"
                 SearchFunc="ChooseProject"
+                Clearable="true"
+                OnClearButtonClick="ClearProject"
                 />
         </MudItem>
     </MudPaper>
@@ -118,21 +121,21 @@
 </MudForm>
 
 @code {
-    private string project = "";
-    private string[] projects = new[] { "Oslo1", "Oslo2", "Test Proj" };
-    string searchTerm = "it";
+    HttpClient httpclient = new();
+    private string baseUri = "https://localhost";
+    private int port = 44352;
+    private string endpointPrefix = "api";
 
-    IEnumerable<string> sentences = new List<string>
-    {
-        "This is the first item", "This is the second item", "This is the third item"
-    };
+    private string project;
+    private List<string> projects = new();
+
+    //private string[] projects = new[] { "Oslo1", "Oslo2", "Test Proj" };
 
     public enum Times
     {
         startTime,
         endingTime
     }
-
     TimeSpan? startingTime = new TimeSpan(02, 35, 00);
     TimeSpan? endingTime = new TimeSpan(02, 35, 00);
 
@@ -151,15 +154,33 @@
         Console.WriteLine(endingTime);
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        string uri = baseUri + ":" + port + "/" + endpointPrefix + "/projects";
+        IEnumerable<GetProjectDTO> fetchedProjects = await GetProjects(uri);
+
+        foreach (GetProjectDTO project in fetchedProjects)
+        {
+            projects.Add(project.ProjectFullName);
+        }
+    }
+
     private async Task<IEnumerable<string>> ChooseProject(string project)
     {
-        // Simulating delay in API call
-        await Task.Delay(1);
-
         if (string.IsNullOrEmpty(project))
         {
             return projects;
         }
         return projects.Where(p => p.Contains(project, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task ClearProject()
+    {
+        project = string.Empty;
+    }
+
+    public async Task<IEnumerable<GetProjectDTO>> GetProjects(string uri)
+    {
+        return await httpclient.GetFromJsonAsync<List<GetProjectDTO>>(uri);
     }
 }

@@ -1,6 +1,4 @@
-﻿@using System.Text.Json;
-@using juultimesedler_fe_blazor.Shared.Models.DTOs;
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 
 <MudThemeProvider />
 <MudDialogProvider />
@@ -43,51 +41,8 @@
 <MudLayout>
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.Large">
-
-            @data.Count
-            <MudList>
-                @foreach (var item in data)
-                {
-                    <MudListItem>
-                        @item.ProjectId
-                        <br />
-                        @item.ProjectName
-                        <br />
-                        @item.ProjectFullName
-                    </MudListItem>
-                    <MudDivider />
-                }
-            </MudList>
-
             @Body
-
         </MudContainer>
     </MudMainContent>
 
 </MudLayout>
-
-@code {
-    HttpClient httpclient = new();
-
-    private string baseUri = "https://localhost";
-    private int port = 44352;
-    private string endpointPrefix = "api";
-
-    private List<GetProjectDTO> data = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        string uri = baseUri + ":" + port + "/" + endpointPrefix + "/projects";
-        var result = await GetProjects(uri);
-
-        foreach (var item in result)
-        {
-            data.Add(item);
-        }
-    }
-
-    public async Task<IEnumerable<GetProjectDTO>> GetProjects(string uri)
-    {
-        return await httpclient.GetFromJsonAsync<List<GetProjectDTO>>(uri);
-    }
-}

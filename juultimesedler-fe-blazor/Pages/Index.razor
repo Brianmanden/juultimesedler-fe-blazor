@@ -1,5 +1,7 @@
 ﻿@page "/"
 @using juultimesedler_fe_blazor.Shared.Models.DTOs;
+@using Microsoft.Extensions.Configuration;
+@inject HttpClient Http
 
 <PageTitle>Index</PageTitle>
 
@@ -38,14 +40,12 @@
     <MudPaper Elevation="5">
         <MudItem>
             <MudText Typo="Typo.h6">Projects</MudText>
-            <MudAutocomplete
-                @bind-Value="project"
-                Clearable
-                Label="Select project"
-                OnClearButtonClick="ClearProject"
-                SearchFunc="ChooseProject"
-                T="string"
-            />
+            <MudAutocomplete @bind-Value="project"
+                                  Clearable
+                             Label="Select project"
+                             OnClearButtonClick="ClearProject"
+                             SearchFunc="ChooseProject"
+                             T="string" />
         </MudItem>
     </MudPaper>
     <MudDivider />
@@ -62,10 +62,10 @@
                            TimeEditMode="TimeEditMode.OnlyHours"
             @bind-Time="startingTime">
                 <PickerActions>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(Times.startTime, 0)">:00</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(Times.startTime, 15)">:15</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(Times.startTime, 30)">:30</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(Times.startTime, 45)">:45</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(times.startTime, 0)">:00</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(times.startTime, 15)">:15</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(times.startTime, 30)">:30</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(times.startTime, 45)">:45</MudButton>
                     <MudButton Color="Color.Primary" OnClick="@(() => context.Close())">Ok</MudButton>
                 </PickerActions>
             </MudTimePicker>
@@ -81,10 +81,10 @@
                            TimeEditMode="TimeEditMode.OnlyHours"
             @bind-Time="endingTime">
                 <PickerActions>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(Times.endingTime, 0)">:00</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(Times.endingTime, 15)">:15</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(Times.endingTime, 30)">:30</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(Times.endingTime, 45)">:45</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(times.endingTime, 0)">:00</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(times.endingTime, 15)">:15</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(times.endingTime, 30)">:30</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(times.endingTime, 45)">:45</MudButton>
                     <MudButton Color="Color.Primary" OnClick="@(() => context.Close())">Ok</MudButton>
                 </PickerActions>
             </MudTimePicker>
@@ -96,7 +96,7 @@
     @*TASKS*@
     <MudPaper Elevation="5">
         <MudText Typo="Typo.h6">Tasks</MudText>
-        <MudTextField @bind-Value="Search" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary" />
+        <MudTextField @bind-Value="search" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary" />
         <MudSelect T="string" Label="Tasks" MultiSelection="true" Variant="Variant.Outlined">
             <MudSelectItem T="string">Slæbe gips</MudSelectItem>
             <MudSelectItem T="string">Skære gips</MudSelectItem>
@@ -123,24 +123,28 @@
 
 @code {
     #region INIT Variables & Services
-    HttpClient httpClient = new();
-    private string baseUri = "https://localhost";
-    private int apiPort = 44352;
-    private string endpointPrefix = "api";
+    
+    private const string baseUri = "https://localhost:44352/api";
+    private const string projectsEndpoint = baseUri + "/projects";
+
     private string project;
-    private List<string> projects = new();
-    public string Search { get; set; }
-    public enum Times{ startTime, endingTime }
+    private List<string>? projects = new();
+    private GetProjectDTO[]? fetchedProjects;
+    public string? search { get; set; }
+    
+    public enum times { startTime, endingTime }
     TimeSpan? startingTime = new TimeSpan(02, 35, 00);
     TimeSpan? endingTime = new TimeSpan(02, 35, 00);
 
-    ProjectService projectService = new();
     #endregion
 
     #region METHODS
-    public void SetPredefinedMinutes(Times whichTime, int minutes)
+
+    #region Time Methods
+    
+    public void SetPredefinedMinutes(times whichTime, int minutes)
     {
-        if (whichTime == Times.endingTime)
+        if (whichTime == times.endingTime)
         {
             endingTime = TimeSpan.Parse(endingTime!.Value.Hours + ":" + minutes + ":00");
         }
@@ -150,6 +154,13 @@
         }
         Console.WriteLine(endingTime);
     }
+    
+    #endregion
+
+    #region Project Methods
+
+    private async Task ClearProject() { project = string.Empty; }
+
     private async Task<IEnumerable<string>> ChooseProject(string project)
     {
         if (string.IsNullOrEmpty(project))
@@ -158,19 +169,25 @@
         }
         return projects.Where(p => p.Contains(project, StringComparison.InvariantCultureIgnoreCase));
     }
-    private async Task ClearProject(){ project = string.Empty; }
+
+    private async Task GetProjects()
+    {
+        fetchedProjects = await Http.GetFromJsonAsync<GetProjectDTO[]>(projectsEndpoint);
+    }
+    #endregion
+
     #endregion
 
     #region BLAZOR CONFIG
     protected override async Task OnInitializedAsync()
     {
-        string uri = baseUri + ":" + apiPort + "/" + endpointPrefix + "/projects";
-        IEnumerable<GetProjectDTO> fetchedProjects = await projectService.GetProjects(httpClient, uri);
-
-        foreach (GetProjectDTO project in fetchedProjects)
+        #region Fetch projects
+        await GetProjects();
+        foreach (GetProjectDTO project in fetchedProjects!)
         {
-            projects.Add(project.ProjectFullName);
+            projects.Add(project.ProjectName);
         }
+        #endregion
     }
     #endregion
 }

@@ -96,9 +96,23 @@
     @*TASKS*@
     <MudPaper Elevation="5">
         <MudText Typo="Typo.h6">Tasks</MudText>
+        @*HERTIL BJA - overvej datagrid eller lign.*@
         <MudTextField @bind-Value="search" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary" />
-        <MudSelect T="string" Label="Tasks" MultiSelection="true" Variant="Variant.Outlined">
+        <MudSelect
+            T="string"
+            Label="Tasks"
+            MultiSelection="true"
+            Lines="7"
+            Variant="Variant.Outlined">
             <MudSelectItem T="string">Slæbe gips</MudSelectItem>
+            <MudSelectItem T="string">Skære gips</MudSelectItem>
+            <MudDivider DividerType="DividerType.FullWidth" />
+            <MudSelectItem T="string">Sætte gips op</MudSelectItem>
+            <MudSelectItem T="string">Slæbe gips</MudSelectItem>
+            <MudDivider />
+            <MudSelectItem T="string">Sætte gips op</MudSelectItem>
+            <MudSelectItem T="string">Skære gips</MudSelectItem>
+            <MudDivider />
             <MudSelectItem T="string">Skære gips</MudSelectItem>
             <MudSelectItem T="string">Sætte gips op</MudSelectItem>
         </MudSelect>
@@ -123,25 +137,45 @@
 
 @code {
     #region INIT Variables & Services
-    
+
+    #region Variables
+
     private const string baseUri = "https://localhost:44352/api";
     private const string projectsEndpoint = baseUri + "/projects";
+    private const string tasksEndpoint = baseUri + "/tasks";
+
+    #endregion
+
+    #region Project variables
 
     private string project;
     private List<string>? projects = new();
     private GetProjectDTO[]? fetchedProjects;
     public string? search { get; set; }
-    
+
+    #endregion
+
+    #region Task variables
+
+    private TasksGroupDTO[]? fetchedTasks;
+
+    #endregion
+
+    #region Times variables
+
     public enum times { startTime, endingTime }
     TimeSpan? startingTime = new TimeSpan(02, 35, 00);
     TimeSpan? endingTime = new TimeSpan(02, 35, 00);
 
     #endregion
 
+    #endregion
+
+
     #region METHODS
 
     #region Time Methods
-    
+
     public void SetPredefinedMinutes(times whichTime, int minutes)
     {
         if (whichTime == times.endingTime)
@@ -154,7 +188,7 @@
         }
         Console.WriteLine(endingTime);
     }
-    
+
     #endregion
 
     #region Project Methods
@@ -174,19 +208,49 @@
     {
         fetchedProjects = await Http.GetFromJsonAsync<GetProjectDTO[]>(projectsEndpoint);
     }
+
+    #endregion
+
+
+    #region Task Methods
+
+    private async Task GetTasks()
+    {
+        fetchedTasks = await Http.GetFromJsonAsync<TasksGroupDTO[]>(tasksEndpoint);
+    }
+
     #endregion
 
     #endregion
+
 
     #region BLAZOR CONFIG
     protected override async Task OnInitializedAsync()
     {
         #region Fetch projects
+
         await GetProjects();
         foreach (GetProjectDTO project in fetchedProjects!)
         {
             projects.Add(project.ProjectName);
         }
+
+        #endregion
+
+
+        #region Fetch Tasks
+
+        await GetTasks();
+        foreach (TasksGroupDTO taskGroup in fetchedTasks)
+        {    
+            Console.WriteLine(taskGroup.TaskGroupName + "---");
+            foreach (string task in taskGroup.TaskNames)
+            {
+                Console.WriteLine(task);
+            }
+            Console.WriteLine("---");
+        }
+
         #endregion
     }
     #endregion

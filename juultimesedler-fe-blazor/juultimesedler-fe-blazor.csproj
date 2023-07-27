@@ -12,6 +12,12 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.9" PrivateAssets="all" />
 		<PackageReference Include="MudBlazor" Version="6.7.0" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="wwwroot\periodictable.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
 	
 	
 </Project>

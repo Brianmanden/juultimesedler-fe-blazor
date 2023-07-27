@@ -1,9 +1,7 @@
 ﻿@page "/"
 @using juultimesedler_fe_blazor.Shared.Models.DTOs;
 @using Microsoft.Extensions.Configuration;
-@inject HttpClient Http
-@inject ProjectsService ProjectsService
-@inject TasksService TasksService
+@inject IndexViewModel ViewModel;
 
 <PageTitle>Index</PageTitle>
 
@@ -42,12 +40,12 @@
     <MudPaper Elevation="5">
         <MudItem>
             <MudText Typo="Typo.h6">Projects</MudText>
-            <MudAutocomplete @bind-Value="_selectedProject"
+            <MudAutocomplete @bind-Value="ViewModel.SelectedProject"
                              ToStringFunc="@(e=> e==null? "" : $"{e.ProjectId} - {e.ProjectName}")"
                              Clearable
                              Label="Select project"
-                             OnClearButtonClick="ClearProject"
-                             SearchFunc="ChooseProject"
+                             OnClearButtonClick="ViewModel.ClearProject"
+                             SearchFunc="ViewModel.ChooseProject"
                              T="GetProjectDTO" />
         </MudItem>
     </MudPaper>
@@ -63,12 +61,12 @@
                            Label="Starting Time"
                            PickerVariant="PickerVariant.Dialog"
                            TimeEditMode="TimeEditMode.OnlyHours"
-            @bind-Time="startingTime">
+            @bind-Time="ViewModel.StartingTime">
                 <PickerActions>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(TimeType.StartTime, 0)">:00</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(TimeType.StartTime, 15)">:15</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(TimeType.StartTime, 30)">:30</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(TimeType.StartTime, 45)">:45</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.StartTime, 0)">:00</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.StartTime, 15)">:15</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.StartTime, 30)">:30</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.StartTime, 45)">:45</MudButton>
                     <MudButton Color="Color.Primary" OnClick="@(() => context.Close())">Ok</MudButton>
                 </PickerActions>
             </MudTimePicker>
@@ -82,12 +80,12 @@
                            Label="Ending Time"
                            PickerVariant="PickerVariant.Dialog"
                            TimeEditMode="TimeEditMode.OnlyHours"
-            @bind-Time="endingTime">
+            @bind-Time="ViewModel.EndingTime">
                 <PickerActions>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(TimeType.EndingTime, 0)">:00</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(TimeType.EndingTime, 15)">:15</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(TimeType.EndingTime, 30)">:30</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => SetPredefinedMinutes(TimeType.EndingTime, 45)">:45</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.EndingTime, 0)">:00</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.EndingTime, 15)">:15</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.EndingTime, 30)">:30</MudButton>
+                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.EndingTime, 45)">:45</MudButton>
                     <MudButton Color="Color.Primary" OnClick="@(() => context.Close())">Ok</MudButton>
                 </PickerActions>
             </MudTimePicker>
@@ -100,7 +98,7 @@
     <MudPaper Elevation="5">
         <MudText Typo="Typo.h6">Tasks</MudText>
         @*HERTIL BJA - overvej datagrid eller lign.*@
-        <MudTextField @bind-Value="_tasksSearchText" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary" />
+        <MudTextField @bind-Value="ViewModel.TasksSearchText" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary" />
         <MudSelect
             T="string"
             Label="Tasks"
@@ -139,41 +137,8 @@
 </MudForm>
 
 @code {
-    private GetProjectDTO _selectedProject;
-    private GetProjectDTO[]? _projects;
-    private string? _tasksSearchText;
-    private TasksGroupDTO[]? _groupedTasks;
-
-    TimeSpan? startingTime = new TimeSpan(02, 35, 00);
-    TimeSpan? endingTime = new TimeSpan(02, 35, 00);
-
-    private void SetPredefinedMinutes(TimeType whichTime, int minutes)
-    {
-        if (whichTime == TimeType.EndingTime)
-        {
-            endingTime = TimeSpan.Parse(endingTime!.Value.Hours + ":" + minutes + ":00");
-        }
-        else
-        {
-            startingTime = TimeSpan.Parse(startingTime!.Value.Hours + ":" + minutes + ":00");
-        }
-        Console.WriteLine(endingTime);
-    }
-
-    private async Task ClearProject() { _selectedProject = null; }
-
-    private async Task<IEnumerable<GetProjectDTO>> ChooseProject(string project)
-    {
-        if (string.IsNullOrEmpty(project))
-        {
-            return _projects;
-        }
-        return _projects.Where(p => p.ProjectName.Contains(project, StringComparison.InvariantCultureIgnoreCase));
-    }
-
     protected override async Task OnInitializedAsync()
     {
-        _projects = await ProjectsService.GetProjects();
-        _groupedTasks = await TasksService.GetTasks();
+        await ViewModel.Initialize();
     }
 }

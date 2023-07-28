@@ -18,5 +18,4 @@ public class TasksService
     {
         return await _http.GetFromJsonAsync<TasksGroupDTO[]>(_tasksEndpoint);
     }
-
 }

@@ -8,18 +8,22 @@ public class IndexViewModel
 {
     private ProjectsService _projectsService;
     private TasksService _tasksService;
+    private TimesheetsService _timesheetsService;
+
     private GetProjectDTO[]? _projects;
     private TasksGroupDTO[]? _groupedTasks;
 
     public GetProjectDTO SelectedProject { get; set; }
     public string? TasksSearchText { get; set; }
+    public GetTimesheetDTO Timesheet { get; set; }
     public TimeSpan? StartingTime { get; set; } = new TimeSpan(02, 35, 00);
     public TimeSpan? EndingTime { get; set; } = new TimeSpan(02, 35, 00);
 
-    public IndexViewModel(ProjectsService projectService, TasksService tasksService)
+    public IndexViewModel(ProjectsService projectService, TasksService tasksService, TimesheetsService timesheetsService)
     {
         _projectsService = projectService;
         _tasksService = tasksService;
+        _timesheetsService = timesheetsService;
     }
 
     public void SetPredefinedMinutes(TimeType whichTime, int minutes)
@@ -50,6 +54,7 @@ public class IndexViewModel
     {
         _projects = await _projectsService.GetProjects();
         _groupedTasks = await _tasksService.GetTasks();
+        Timesheet = await _timesheetsService.GetCurrentTimesheetWeek();
     }
 
     //TODO BJA Create method to send form to BE

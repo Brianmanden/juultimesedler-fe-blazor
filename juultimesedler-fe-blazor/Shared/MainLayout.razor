@@ -3,45 +3,10 @@
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
-<style>
-    .mud-main-content {
-        padding-top: 15px;
-    }
-
-    .mud-container {
-        border-radius: 4px;
-        padding-top: 15px;
-    }
-
-    .mud-paper {
-        padding: 15px;
-    }
-
-    .company-headline {
-        background: var(--mud-palette-primary-lighten);
-        border-radius: 4px;
-        box-shadow: var(--mud-elevation-5);
-        color: var(--mud-palette-white);
-        letter-spacing: 3px;
-        margin: 10px 0 30px;
-        padding: 10px;
-        text-align: center;
-    }
-
-    .mud-typography-h6 {
-        margin-bottom: 20px;
-    }
-
-    .submit-btn {
-        box-shadow: var(--mud-elevation-5);
-        margin-bottom: 10px;
-        margin-top: 5px;
-    }
-</style>
 
 <MudLayout>
-    <MudMainContent class="blue-grey lighten-4">
-        <MudContainer MaxWidth="MaxWidth.ExtraSmall" class="teal lighten-5">
+    <MudMainContent Class="blue-grey lighten-4">
+        <MudContainer Class="my-4 pt-2 pb-5 rounded teal lighten-5" MaxWidth="MaxWidth.ExtraSmall">
             @Body
         </MudContainer>
     </MudMainContent>

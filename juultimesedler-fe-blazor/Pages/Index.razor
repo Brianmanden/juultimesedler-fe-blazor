@@ -6,54 +6,60 @@
 <PageTitle>Index</PageTitle>
 
 @*HEADLINE*@
-<MudText Class="company-headline" Typo="Typo.h4">Juul Timesedler</MudText>
+<MudPaper Elevation="5" Class="pa-3 mt-5 d-flex justify-center flex-grow-1 gap-4">
+    <MudText Typo="Typo.h4">Juul Timesedler</MudText>
+</MudPaper>
 
 @*WEEKS & DAYS*@
-<MudPaper Elevation="5">
+<MudPaper Elevation="5" Class="pa-4 my-4">
     <MudText Typo="Typo.h6">Weeks &amp; days</MudText>
     <MudDivider />
 
-    <MudAppBar Color="Color.Primary" Fixed="false">
-        <MudIcon Icon="@Icons.Material.Filled.ChevronLeft" Title="Prev. Week" />
-        <MudSpacer />
-        <MudText Typo="Typo.h5">Week # 26</MudText>
-        <MudSpacer />
-        <MudIcon Icon="@Icons.Material.Filled.ChevronRight" Title="Next Week" />
-    </MudAppBar>
-    <MudTabs AlwaysShowScrollButtons="true"
-             Class="mt-4"
-             Color="@Color.Info"
-             Rounded="true">
-        <MudTabPanel Text="Monday" />
-        <MudTabPanel Text="Tuesday" />
-        <MudTabPanel Text="Wednesday" />
-        <MudTabPanel Text="Thursday" />
-        <MudTabPanel Text="Friday" />
-        <MudTabPanel Text="Saturday" />
-        <MudTabPanel Text="Sunday" />
-    </MudTabs>
+    @if (ViewModel.Timesheet is null)
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    }
+    else
+    {
+        <MudAppBar Color="Color.Primary" Fixed="false">
+            <MudIcon Icon="@Icons.Material.Filled.ChevronLeft" Title="Prev. Week" />
+            <MudSpacer />
+            <MudText Typo="Typo.h5">Week # @ViewModel.Timesheet.weekNumber</MudText>
+            <MudSpacer />
+            <MudIcon Icon="@Icons.Material.Filled.ChevronRight" Title="Next Week" />
+        </MudAppBar>
+
+        <MudTabs AlwaysShowScrollButtons="true"
+                 Class="mt-4"
+                 Color="@Color.Info"
+                 Rounded="true">
+            @foreach (var weekday in ViewModel.Timesheet.weekDays)
+            {
+                <MudTabPanel Text="@weekday" />
+            }
+        </MudTabs>
+    }
 </MudPaper>
-<br />
 
 <MudForm>
     @*PROJECTS*@
-    <MudPaper Elevation="5">
+    <MudPaper Elevation="5" Class="pa-4 my-4">
         <MudItem>
             <MudText Typo="Typo.h6">Projects</MudText>
+            <MudDivider />
+
             <MudAutocomplete @bind-Value="ViewModel.SelectedProject"
                              ToStringFunc="@(e=> e==null? "" : $"{e.ProjectId} - {e.ProjectName}")"
-                             Clearable
+                                  Clearable
                              Label="Select project"
                              OnClearButtonClick="ViewModel.ClearProject"
                              SearchFunc="ViewModel.ChooseProject"
                              T="GetProjectDTO" />
         </MudItem>
     </MudPaper>
-    <MudDivider />
-    <br />
 
     @*STARTING TIME & ENDING TIME*@
-    <MudPaper Elevation="5">
+    <MudPaper Elevation="5" Class="pa-4 my-4">
         @* STARTING TIME *@
         <MudItem>
             <MudText Typo="Typo.h6">Time</MudText>
@@ -92,19 +98,17 @@
 
         </MudItem>
     </MudPaper>
-    <br />
 
     @*TASKS*@
-    <MudPaper Elevation="5">
+    <MudPaper Elevation="5" Class="pa-4 my-4">
         <MudText Typo="Typo.h6">Tasks</MudText>
         @*HERTIL BJA - overvej datagrid eller lign.*@
         <MudTextField @bind-Value="ViewModel.TasksSearchText" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary" />
-        <MudSelect
-            T="string"
-            Label="Tasks"
-            MultiSelection="true"
-            Lines="7"
-            Variant="Variant.Outlined">
+        <MudSelect T="string"
+                   Label="Tasks"
+                   MultiSelection="true"
+                   Lines="7"
+                   Variant="Variant.Outlined">
             <MudSelectItem T="string">Slæbe gips</MudSelectItem>
             <MudSelectItem T="string">Skære gips</MudSelectItem>
             <MudDivider DividerType="DividerType.FullWidth" />
@@ -118,22 +122,18 @@
             <MudSelectItem T="string">Sætte gips op</MudSelectItem>
         </MudSelect>
     </MudPaper>
-    <br />
 
     @*COMMENTS*@
-    <MudPaper Elevation="5">
+    <MudPaper Elevation="5" Class="pa-4 my-4">
         <MudText Typo="Typo.h6">Comments</MudText>
         <MudTextField T="string" Variant="Variant.Outlined" Text="200.- for diesel" Lines="5"></MudTextField>
     </MudPaper>
-    <br />
 
     @*SUBMIT*@
-    <MudButton Class="submit-btn"
+    <MudButton Class="mb-4"
                Color="Color.Primary"
                Variant="Variant.Filled">Send</MudButton>
-    <br />
-    <br />
-    <br />
+
 </MudForm>
 
 @code {

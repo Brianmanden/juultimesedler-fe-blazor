@@ -10,10 +10,11 @@ public class IndexViewModel
     private TasksService _tasksService;
     private TimesheetsService _timesheetsService;
 
-    private TasksGroupDTO[]? _groupedTasks;
-
     public GetProjectDTO[]? Projects;
     public GetProjectDTO SelectedProject { get; set; }
+    public TasksGroupDTO[]? GroupedTasks;
+    public HashSet<string> SelectedTasks { get; set; }
+
     public string? TasksSearchText { get; set; }
     public GetTimesheetDTO Timesheet { get; set; }
     public TimeSpan? StartingTime { get; set; } = new TimeSpan(02, 35, 00);
@@ -53,7 +54,7 @@ public class IndexViewModel
     public async Task Initialize()
     {
         Projects = await _projectsService.GetProjects();
-        _groupedTasks = await _tasksService.GetTasks();
+        GroupedTasks = await _tasksService.GetTasks();
         Timesheet = await _timesheetsService.GetCurrentTimesheetWeek();
     }
 

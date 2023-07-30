@@ -102,21 +102,40 @@
     @*TASKS*@
     <MudPaper Elevation="5" Class="pa-4 my-4">
         <MudText Typo="Typo.h6">Tasks</MudText>
-        @*HERTIL BJA - overvej datagrid eller lign.*@
-        <MudTextField @bind-Value="ViewModel.TasksSearchText" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary" />
-        <MudSelect T="string"
-                   Label="Tasks"
-                   MultiSelection="true"
-                   Lines="7"
-                   Variant="Variant.Outlined">
-            <MudSelectItem T="string">Gips</MudSelectItem>
-            <MudDivider DividerType="DividerType.FullWidth" />
-            <MudSelectItem T="string">Rydde op</MudSelectItem>
-            <MudDivider />
-            <MudSelectItem T="string">Tømme container</MudSelectItem>
-            <MudDivider />
-            <MudSelectItem T="string">Afvig</MudSelectItem>
-        </MudSelect>
+        <MudDivider />
+
+        @if (ViewModel.GroupedTasks is null)
+        {
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        }
+        else
+        {
+            <MudTreeView MultiSelection="true" @bind-SelectedValues="ViewModel.SelectedTasks">
+                @foreach (var taskGroup in ViewModel.GroupedTasks)
+                {
+                    <MudTreeViewItem Value="@taskGroup.TaskGroupName">
+                        @foreach (var taskName in taskGroup.TaskNames)
+                        {
+                            <MudTreeViewItem Value="@taskName" />
+                        }
+                    </MudTreeViewItem>   
+                }
+            </MudTreeView>
+
+
+            @if (ViewModel.SelectedTasks?.Count > 0)
+            {
+                @foreach (var task in ViewModel.SelectedTasks)
+                {
+                    <MudChip Color="Color.Primary"><MudIcon Icon="@Icons.Material.Filled.TaskAlt" Size="Size.Medium" Style="padding-right: 10px;" />@task</MudChip>
+                }
+                <MudText><strong>@ViewModel.SelectedTasks.Count tasks selected.</strong></MudText>
+            }
+            else
+            {
+                <MudText><strong>No tasks selected.</strong></MudText>
+            }
+        }
     </MudPaper>
 
     @*COMMENTS*@

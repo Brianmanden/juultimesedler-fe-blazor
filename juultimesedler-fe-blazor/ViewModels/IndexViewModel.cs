@@ -10,9 +10,9 @@ public class IndexViewModel
     private TasksService _tasksService;
     private TimesheetsService _timesheetsService;
 
-    private GetProjectDTO[]? _projects;
     private TasksGroupDTO[]? _groupedTasks;
 
+    public GetProjectDTO[]? Projects;
     public GetProjectDTO SelectedProject { get; set; }
     public string? TasksSearchText { get; set; }
     public GetTimesheetDTO Timesheet { get; set; }
@@ -45,14 +45,14 @@ public class IndexViewModel
     {
         if (string.IsNullOrEmpty(project))
         {
-            return _projects;
+            return Projects;
         }
-        return _projects.Where(p => p.ProjectName.Contains(project, StringComparison.InvariantCultureIgnoreCase));
+        return Projects.Where(p => p.ProjectName.Contains(project, StringComparison.InvariantCultureIgnoreCase));
     }
 
     public async Task Initialize()
     {
-        _projects = await _projectsService.GetProjects();
+        Projects = await _projectsService.GetProjects();
         _groupedTasks = await _tasksService.GetTasks();
         Timesheet = await _timesheetsService.GetCurrentTimesheetWeek();
     }

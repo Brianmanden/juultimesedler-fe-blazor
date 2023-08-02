@@ -27,19 +27,6 @@ public class IndexViewModel
         _timesheetsService = timesheetsService;
     }
 
-    public void SetPredefinedMinutes(TimeType whichTime, int minutes)
-    {
-        if (whichTime == TimeType.EndingTime)
-        {
-            EndingTime = TimeSpan.Parse(EndingTime!.Value.Hours + ":" + minutes + ":00");
-        }
-        else
-        {
-            StartingTime = TimeSpan.Parse(StartingTime!.Value.Hours + ":" + minutes + ":00");
-        }
-        Console.WriteLine(EndingTime);
-    }
-
     public async Task ClearProject() { SelectedProject = null; }
 
     public async Task<IEnumerable<GetProjectDTO>> ChooseProject(string project)

@@ -66,17 +66,8 @@
             <MudTimePicker Adornment="Adornment.Start"
                            Label="Starting Time"
                            PickerVariant="PickerVariant.Dialog"
-                           TimeEditMode="TimeEditMode.OnlyHours"
-            @bind-Time="ViewModel.StartingTime">
-                <PickerActions>
-                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.StartTime, 0)">:00</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.StartTime, 15)">:15</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.StartTime, 30)">:30</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.StartTime, 45)">:45</MudButton>
-                    <MudButton Color="Color.Primary" OnClick="@(() => context.Close())">Ok</MudButton>
-                </PickerActions>
+                           @bind-Time="ViewModel.StartingTime">
             </MudTimePicker>
-
         </MudItem>
         <br />
 
@@ -85,17 +76,8 @@
             <MudTimePicker Adornment="Adornment.Start"
                            Label="Ending Time"
                            PickerVariant="PickerVariant.Dialog"
-                           TimeEditMode="TimeEditMode.OnlyHours"
-            @bind-Time="ViewModel.EndingTime">
-                <PickerActions>
-                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.EndingTime, 0)">:00</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.EndingTime, 15)">:15</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.EndingTime, 30)">:30</MudButton>
-                    <MudButton Class="mud-theme-primary" @onclick="() => ViewModel.SetPredefinedMinutes(TimeType.EndingTime, 45)">:45</MudButton>
-                    <MudButton Color="Color.Primary" OnClick="@(() => context.Close())">Ok</MudButton>
-                </PickerActions>
+                           @bind-Time="ViewModel.EndingTime">
             </MudTimePicker>
-
         </MudItem>
     </MudPaper>
 

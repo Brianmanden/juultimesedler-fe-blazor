@@ -7,7 +7,8 @@ public class TimesheetsService
 {
     private HttpClient _http;
     private const string _baseUri = "https://localhost:44352/api";
-    private const string _timesheetsEndpoint = _baseUri + "/gettimesheetweek";
+    private const string _getTimesheetsEndpoint = _baseUri + "/gettimesheetweek";
+    private const string _putTimesheetsEndpoint = _baseUri + "/puttimesheetweek";
 
     public TimesheetsService(HttpClient http)
     {
@@ -16,6 +17,12 @@ public class TimesheetsService
 
     public async Task<GetTimesheetDTO> GetCurrentTimesheetWeek()
     {
-        return await _http.GetFromJsonAsync<GetTimesheetDTO>(_timesheetsEndpoint);
+        return await _http.GetFromJsonAsync<GetTimesheetDTO>(_getTimesheetsEndpoint);
+    }
+
+    public async Task PutCurrentTimesheetWeek(PutTimesheetDTO timesheetCurrentWeek)
+    {
+        CancellationToken cancellationToken = CancellationToken.None;
+        await _http.PutAsJsonAsync(_putTimesheetsEndpoint, timesheetCurrentWeek, cancellationToken);
     }
 }

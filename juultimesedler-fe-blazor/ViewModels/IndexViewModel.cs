@@ -1,5 +1,6 @@
 ﻿using juultimesedler_fe_blazor.Models;
 using juultimesedler_fe_blazor.Services;
+using juultimesedler_fe_blazor.Shared.Models;
 using juultimesedler_fe_blazor.Shared.Models.DTOs;
 
 namespace juultimesedler_fe_blazor.ViewModels;
@@ -10,10 +11,13 @@ public class IndexViewModel
     private TasksService _tasksService;
     private TimesheetsService _timesheetsService;
 
+    public bool IsLoading { get; set; }
+
     public GetProjectDTO[]? Projects;
     public GetProjectDTO SelectedProject { get; set; }
     public TasksGroupDTO[]? GroupedTasks;
     public HashSet<string> SelectedTasks { get; set; }
+    public string? Comments { get; set; }
 
     public string? TasksSearchText { get; set; }
     public GetTimesheetDTO Timesheet { get; set; }
@@ -38,6 +42,38 @@ public class IndexViewModel
         return Projects.Where(p => p.ProjectName.Contains(project, StringComparison.InvariantCultureIgnoreCase));
     }
 
+    //public async Task SendForm(PutTimesheetDTO currentWeekTimesheet) {
+    public async Task SendForm()
+    {
+        PutTimesheetDTO currentWeekTimesheet = new PutTimesheetDTO();
+        currentWeekTimesheet.WorkerId = 1113;
+        currentWeekTimesheet.WeekNumber = Timesheet.weekNumber;
+        List<WorkDay> workDays = new List<WorkDay>
+        {
+            new WorkDay
+            {
+                SelectedProjectId = SelectedProject.ProjectId,
+                StartTime = StartingTime.ToString(),
+                EndTime = EndingTime.ToString(),
+                WorkdayComments = Comments,
+                SelectedTasks = SelectedTasks,
+                WeekDay = 0,
+            },
+            new WorkDay
+            {
+                SelectedProjectId = SelectedProject.ProjectId,
+                StartTime = StartingTime.ToString(),
+                EndTime = EndingTime.ToString(),
+                WorkdayComments = Comments,
+                SelectedTasks = SelectedTasks,
+                WeekDay = 1,
+            },
+        };
+        currentWeekTimesheet.Workdays = workDays;
+
+        await _timesheetsService.PutCurrentTimesheetWeek(currentWeekTimesheet);
+    }
+
     public async Task Initialize()
     {
         Projects = await _projectsService.GetProjects();
@@ -45,5 +81,4 @@ public class IndexViewModel
         Timesheet = await _timesheetsService.GetCurrentTimesheetWeek();
     }
 
-    //TODO BJA Create method to send form to BE
 }

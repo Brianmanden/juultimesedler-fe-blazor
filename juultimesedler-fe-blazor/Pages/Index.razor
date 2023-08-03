@@ -13,7 +13,6 @@
 @*WEEKS & DAYS*@
 <MudPaper Elevation="5" Class="pa-4 my-4">
     <MudText Typo="Typo.h6">Weeks &amp; days</MudText>
-    <MudDivider />
 
     @if (ViewModel.Timesheet is null)
     {
@@ -46,7 +45,6 @@
     <MudPaper Elevation="5" Class="pa-4 my-4">
         <MudItem>
             <MudText Typo="Typo.h6">Projects</MudText>
-            <MudDivider />
 
             <MudAutocomplete @bind-Value="ViewModel.SelectedProject"
                              ToStringFunc="@(e=> e==null? "" : $"{e.ProjectId} - {e.ProjectName}")"
@@ -61,30 +59,22 @@
     @*STARTING TIME & ENDING TIME*@
     <MudPaper Elevation="5" Class="pa-4 my-4">
         @* STARTING TIME *@
+        <MudText Typo="Typo.h6">Times</MudText>
+        
         <MudItem>
-            <MudText Typo="Typo.h6">Time</MudText>
-            <MudTimePicker Adornment="Adornment.Start"
-                           Label="Starting Time"
-                           PickerVariant="PickerVariant.Dialog"
-                           @bind-Time="ViewModel.StartingTime">
-            </MudTimePicker>
+            <MudTimePicker Adornment="Adornment.Start" Label="Starting Time" PickerVariant="PickerVariant.Dialog" @bind-Time="ViewModel.StartingTime" />
         </MudItem>
         <br />
 
         @* ENDING TIME *@
         <MudItem>
-            <MudTimePicker Adornment="Adornment.Start"
-                           Label="Ending Time"
-                           PickerVariant="PickerVariant.Dialog"
-                           @bind-Time="ViewModel.EndingTime">
-            </MudTimePicker>
+            <MudTimePicker Adornment="Adornment.Start" Label="Ending Time" PickerVariant="PickerVariant.Dialog" @bind-Time="ViewModel.EndingTime" />
         </MudItem>
     </MudPaper>
 
     @*TASKS*@
     <MudPaper Elevation="5" Class="pa-4 my-4">
         <MudText Typo="Typo.h6">Tasks</MudText>
-        <MudDivider />
 
         @if (ViewModel.GroupedTasks is null)
         {
@@ -97,10 +87,10 @@
                 {
                     <MudTreeViewItem Value="@taskGroup.TaskGroupName">
                         @foreach (var taskName in taskGroup.TaskNames)
-                        {
-                            <MudTreeViewItem Value="@taskName" />
-                        }
-                    </MudTreeViewItem>   
+                    {
+                        <MudTreeViewItem Value="@taskName" />
+                    }
+                </MudTreeViewItem>
                 }
             </MudTreeView>
 
@@ -123,13 +113,11 @@
     @*COMMENTS*@
     <MudPaper Elevation="5" Class="pa-4 my-4">
         <MudText Typo="Typo.h6">Comments</MudText>
-        <MudTextField T="string" Variant="Variant.Outlined" Text="200.- for diesel" Lines="5"></MudTextField>
+        <MudTextField Value="ViewModel.Comments" T="string" Variant="Variant.Outlined" Text="200.- for diesel" Lines="5" />
     </MudPaper>
 
     @*SUBMIT*@
-    <MudButton Class="mb-4"
-               Color="Color.Primary"
-               Variant="Variant.Filled">Send</MudButton>
+    <MudButton Class="mb-4" Color="Color.Primary" Variant="Variant.Filled" OnClick="ViewModel.SendForm">Send</MudButton>
 
 </MudForm>
 

@@ -23,8 +23,8 @@ public class IndexViewModel
 
     public string? TasksSearchText { get; set; }
     public GetTimesheetDTO Timesheet { get; set; }
-    public TimeSpan? StartingTime { get; set; } = new TimeSpan(02, 35, 00);
-    public TimeSpan? EndingTime { get; set; } = new TimeSpan(02, 35, 00);
+    public TimeSpan? StartingTime { get; set; } // = new TimeSpan(02, 35, 00);
+    public TimeSpan? EndingTime { get; set; } // = new TimeSpan(02, 35, 00);
 
     public IndexViewModel(UserService userService, ProjectsService projectService, TasksService tasksService, TimesheetsService timesheetsService)
     {
@@ -54,18 +54,18 @@ public class IndexViewModel
         {
             new WorkDay
             {
-                SelectedProjectId = SelectedProject.ProjectId,
-                StartTime = StartingTime.ToString(),
-                EndTime = EndingTime.ToString(),
+                SelectedProjectId = SelectedProject?.ProjectId ?? null,
+                StartTime = StartingTime.ToString() ?? string.Empty,
+                EndTime = EndingTime.ToString() ?? string.Empty,
                 WorkdayComments = Comments,
                 SelectedTasks = SelectedTasks,
                 WeekDay = 0,
             },
             new WorkDay
             {
-                SelectedProjectId = SelectedProject.ProjectId,
-                StartTime = StartingTime.ToString(),
-                EndTime = EndingTime.ToString(),
+                SelectedProjectId = SelectedProject?.ProjectId ?? null,
+                StartTime = StartingTime.ToString() ?? string.Empty,
+                EndTime = EndingTime.ToString() ?? string.Empty,
                 WorkdayComments = Comments,
                 SelectedTasks = SelectedTasks,
                 WeekDay = 1,

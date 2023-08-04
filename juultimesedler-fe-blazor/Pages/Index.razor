@@ -19,8 +19,8 @@
     }
     else
     {
-        <MudTextField T="string" Text="@ViewModel.User.UserName" />
-        <MudTextField T="int" Value="@ViewModel.User.UserId"></MudTextField>
+        <MudTextField T="int" Adornment="Adornment.Start" AdornmentText="Id: " AdornmentColor="Color.Primary" Value="@ViewModel.User.UserId" ReadOnly />
+        <MudTextField T="string" Adornment="Adornment.Start" AdornmentText="Name: " AdornmentColor="Color.Primary" Text="@ViewModel.User.UserName" ReadOnly />
     }
 </MudPaper>
 

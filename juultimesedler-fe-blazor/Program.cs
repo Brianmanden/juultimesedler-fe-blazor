@@ -12,6 +12,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 #region App services
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ProjectsService>();
 builder.Services.AddScoped<TasksService>();
 builder.Services.AddScoped<TimesheetsService>();

@@ -10,6 +10,20 @@
     <MudText Typo="Typo.h4">Juul Timesedler</MudText>
 </MudPaper>
 
+<MudPaper Elevation="5" Class="pa-4 my-4">
+    <MudText Typo="Typo.h5">User Profile</MudText>
+
+    @if (ViewModel.User is null)
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    }
+    else
+    {
+        <MudTextField T="string" Text="@ViewModel.User.UserName" />
+        <MudTextField T="int" Text="@ViewModel.User.UserId.ToString()" />
+    }
+</MudPaper>
+
 @*WEEKS & DAYS*@
 <MudPaper Elevation="5" Class="pa-4 my-4">
     <MudText Typo="Typo.h6">Weeks &amp; days</MudText>

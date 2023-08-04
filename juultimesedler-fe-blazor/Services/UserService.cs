@@ -6,7 +6,6 @@ public class UserService
 {
     public async Task<User> GetUser()
     {
-        await Task.Delay(500);
-        return new User { UserId = 10, UserName = "Ivan" };
+        return new User { UserId = 10, UserName = "Wilfred Holm" };
     }
 }

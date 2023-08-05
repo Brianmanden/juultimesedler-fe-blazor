@@ -3,7 +3,7 @@
 @using Microsoft.Extensions.Configuration;
 @inject IndexViewModel ViewModel;
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Juul Timesedler</PageTitle>
 
 @*HEADLINE*@
 <MudPaper Elevation="5" Class="pa-3 mt-5 d-flex justify-center flex-grow-1 gap-4">
@@ -35,6 +35,7 @@
     }
     else
     {
+
         <MudAppBar Color="Color.Primary" Fixed="false">
             <MudIcon Icon="@Icons.Material.Filled.ChevronLeft" Title="Prev. Week" />
             <MudSpacer />
@@ -47,9 +48,10 @@
                  Class="mt-4"
                  Color="@Color.Info"
                  Rounded="true">
-            @foreach (var weekday in ViewModel.Timesheet.weekDays)
+            @for (int i = 0; i < @ViewModel.Timesheet.weekDays.Length; i++)
             {
-                <MudTabPanel Text="@weekday" />
+                int localVariable = i;
+                <MudTabPanel Text=@ViewModel.FormattedWeekDate(localVariable) />
             }
         </MudTabs>
     }

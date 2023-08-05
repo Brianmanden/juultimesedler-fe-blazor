@@ -1,6 +1,7 @@
 ﻿using juultimesedler_fe_blazor.Services;
 using juultimesedler_fe_blazor.Shared.Models;
 using juultimesedler_fe_blazor.Shared.Models.DTOs;
+using System.Reflection.Metadata;
 
 namespace juultimesedler_fe_blazor.ViewModels;
 
@@ -74,6 +75,15 @@ public class IndexViewModel
         currentWeekTimesheet.Workdays = workDays;
 
         await _timesheetsService.PutCurrentTimesheetWeek(currentWeekTimesheet);
+    }
+
+    public string FormattedWeekDate(int i)
+    {
+        string shortFormattedWeekdate = $"{Timesheet.weekDays[i].Substring(0, 3)}-{Timesheet.weekDates[i]}.";
+        string fullFormattedWeekdate = $"{Timesheet.weekDays[i]} - {Timesheet.weekDates[i]}";
+
+        return shortFormattedWeekdate;
+        //return fullFormattedWeekdate;
     }
 
     public async Task Initialize()

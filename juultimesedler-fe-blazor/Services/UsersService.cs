@@ -2,7 +2,7 @@
 
 namespace juultimesedler_fe_blazor.Services;
 
-public class UserService
+public class UsersService
 {
     public async Task<User> GetUser()
     {
